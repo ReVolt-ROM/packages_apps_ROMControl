@@ -112,6 +112,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     private static final CharSequence PREF_HIDDEN_STATUSBAR_PULLDOWN = "hidden_statusbar_pulldown";
     private static final CharSequence PREF_HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT = "hidden_statusbar_pulldown_timeout";
 
+    private static int STOCK_FONT_SIZE = 16;
     private static final int REQUEST_PICK_WALLPAPER = 201;
     //private static final int REQUEST_PICK_CUSTOM_ICON = 202; //unused
     private static final int REQUEST_PICK_BOOT_ANIMATION = 203;
@@ -152,6 +153,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     CheckBoxPreference mStatusBarHide;
     CheckBoxPreference mHiddenStatusbarPulldown;
     ListPreference mHiddenStatusbarPulldownTimeout;
+    ListPreference mFontsize;
 
     private AnimationDrawable mAnimationPart1;
     private AnimationDrawable mAnimationPart2;
@@ -304,12 +306,16 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         mWakeUpWhenPluggedOrUnplugged = (CheckBoxPreference) findPreference(PREF_WAKEUP_WHEN_PLUGGED_UNPLUGGED);
         mWakeUpWhenPluggedOrUnplugged.setChecked(Settings.System.getBoolean(mContentResolver,
                         Settings.System.WAKEUP_WHEN_PLUGGED_UNPLUGGED, true));
-
         // hide option if device is already set to never wake up
         if(!mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_unplugTurnsOnScreen)) {
             ((PreferenceGroup) findPreference(PREF_DISPLAY)).removePreference(mWakeUpWhenPluggedOrUnplugged);
         }
+
+        mFontsize = (ListPreference) findPreference("status_bar_fontsize");
+        mFontsize.setOnPreferenceChangeListener(this);
+        mFontsize.setValue(Integer.toString(Settings.System.getInt(mContentRes,
+                Settings.System.STATUSBAR_FONT_SIZE, STOCK_FONT_SIZE)));
 
         if (isTablet(mContext)) {
             mStatusbarSliderPreference.setEnabled(false);
@@ -1059,6 +1065,12 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
             int val = Integer.parseInt((String) newValue);
             Settings.System.putInt(getActivity().getContentResolver(),
                     Settings.System.HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT, val);
+            Helpers.restartSystemUI();
+            return true;
+        } else if (preference == mFontsize) {
+            int val = Integer.parseInt((String) newValue);
+            Settings.System.putInt(mContentRes,
+                    Settings.System.STATUSBAR_FONT_SIZE, val);
             Helpers.restartSystemUI();
             return true;
         }
