@@ -266,9 +266,12 @@ public class Navbar extends AOKPPreferenceFragment implements
             prefs.removePreference(mEnableNavigationBar);
         }
         PreferenceGroup pg = (PreferenceGroup) prefs.findPreference("advanced_cat");
-        if (isTablet(mContext)) { // Tablets don't set NavBar Height
-            pg.removePreference(mNavigationBarHeight);
-            pg.removePreference(mNavigationBarHeightLandscape);
+
+        if (isTablet(mContext)) {
+            //mNavigationBarHeight.setTitle(R.string.system_bar_height_title);
+            //mNavigationBarHeight.setSummary(R.string.system_bar_height_summary);
+            //mNavigationBarHeightLandscape.setTitle(R.string.system_bar_height_landscape_title);
+            //mNavigationBarHeightLandscape.setSummary(R.string.system_bar_height_landscape_summary);
             pg.removePreference(mNavigationBarWidth);
             mNavBarHideEnable.setEnabled(false);
             mDragHandleOpacity.setEnabled(false);
