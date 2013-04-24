@@ -228,6 +228,12 @@ public class StatusBarToggles extends AOKPPreferenceFragment implements
             mFastToggle.setEnabled(false);
         }
 
+<<<<<<< HEAD
+        if (!isAdvanced) {
+            mMatchAction.setEnabled(false);
+        }
+=======
+>>>>>>> 0e7f8aa... ROMControl: CustomToggle Improvements (!Advanced)
         new SettingsObserver(new Handler()).observe();
         refreshSettings();
     }
@@ -575,6 +581,12 @@ public class StatusBarToggles extends AOKPPreferenceFragment implements
             }
         };
 
+<<<<<<< HEAD
+        boolean isAdvanced = Settings.System.getBoolean(getContentResolver(),
+                Settings.System.CUSTOM_TOGGLE_ADVANCED, false);
+
+=======
+>>>>>>> 0e7f8aa... ROMControl: CustomToggle Improvements (!Advanced)
         String action = mResources.getString(R.string.navbar_actiontitle_menu);
         String longpress = mResources.getString(R.string.navbar_longpress_menu);
         longpress = String.format(longpress, button.getLongName());
@@ -609,6 +621,68 @@ public class StatusBarToggles extends AOKPPreferenceFragment implements
     }
 
     private void onDialogClick(ToggleButton button, int command) {
+<<<<<<< HEAD
+        boolean isAdvanced = Settings.System.getBoolean(getContentResolver(),
+                Settings.System.CUSTOM_TOGGLE_ADVANCED, false);
+        if (isAdvanced) {
+            switch (command) {
+                case 0: // Set Click Action
+                    button.setPickLongPress(false);
+                    createActionDialog(button);
+                    break;
+                case 1: // Set Long Press Action
+                    button.setPickLongPress(true);
+                    createActionDialog(button);
+                    break;
+                case 2: // set Custom Icon
+                    int width = 100;
+                    int height = width;
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+                    intent.setType("image/*");
+                    intent.putExtra("crop", "true");
+                    intent.putExtra("aspectX", width);
+                    intent.putExtra("aspectY", height);
+                    intent.putExtra("outputX", width);
+                    intent.putExtra("outputY", height);
+                    intent.putExtra("scale", true);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, getTempFileUri());
+                    intent.putExtra("outputFormat", Bitmap.CompressFormat.PNG.toString());
+                    Log.i(TAG, "started for result, should output to: " + getTempFileUri());
+                    startActivityForResult(intent, REQUEST_PICK_CUSTOM_ICON);
+                    break;
+                case 3: // Delete Button
+                    mButtons.remove(mPendingToggle);
+                    mNumberofToggles--;
+                    break;
+            }
+        } else {
+            switch (command) {
+                case 0: // Set Click Action
+                    button.setPickLongPress(false);
+                    createActionDialog(button);
+                    break;
+                case 1: // set Custom Icon
+                    int width = 100;
+                    int height = width;
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+                    intent.setType("image/*");
+                    intent.putExtra("crop", "true");
+                    intent.putExtra("aspectX", width);
+                    intent.putExtra("aspectY", height);
+                    intent.putExtra("outputX", width);
+                    intent.putExtra("outputY", height);
+                    intent.putExtra("scale", true);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, getTempFileUri());
+                    intent.putExtra("outputFormat", Bitmap.CompressFormat.PNG.toString());
+                    Log.i(TAG, "started for result, should output to: " + getTempFileUri());
+                    startActivityForResult(intent, REQUEST_PICK_CUSTOM_ICON);
+                    break;
+                case 2: // Delete Button
+                    mButtons.remove(mPendingToggle);
+                    mNumberofToggles--;
+                    break;
+            }
+=======
         switch (command) {
             case 0: // Set Click Action
                 button.setPickLongPress(false);
@@ -638,6 +712,7 @@ public class StatusBarToggles extends AOKPPreferenceFragment implements
                 mButtons.remove(mPendingToggle);
                 mNumberofToggles--;
                 break;
+>>>>>>> 0e7f8aa... ROMControl: CustomToggle Improvements (!Advanced)
         }
         refreshButtons();
     }
