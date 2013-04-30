@@ -23,10 +23,6 @@
     <string name="header_system">System</string>
     <string name="sound">Sound</string>
     <string name="lockscreen_options">Lockscreen</string>
-<<<<<<< HEAD
-    <string name="title_ribbon">Ribbons</string>
-=======
->>>>>>> parent of 960967e... RC: AOKP Ribbon
     <string name="weather">Weather</string>
     <string name="tools">Tools</string>
 
@@ -49,10 +45,6 @@
     <string name="title_performance">Performance Settings</string>
     <string name="title_clipboard_share">Share to Clipboard</string>
     <string name="mgerrit_activity_name">mGerrit</string>
-<<<<<<< HEAD
-    <string name="ribbon_settings_title">Ribbons</string>
-=======
->>>>>>> parent of 960967e... RC: AOKP Ribbon
 
     <!-- Header Summaries -->
     <string name="header_summary_clock">@null</string>
@@ -71,13 +63,7 @@
     <string name="header_summary_vibrations">@null</string>
 
     <!-- Menu Strings -->
-<<<<<<< HEAD
-    <string name="menu_nav_bar_reset">Reset nav bar</string>
-    <string name="menu_ribbon_reset">Reset ribbon</string>
-    <string name="menu_ribbon_rearrange">Rearrange ribbon</string>
-=======
     <string name="menu_nav_bar_reset">Reset NavBar</string>
->>>>>>> parent of 960967e... RC: AOKP Ribbon
     <string name="menu_user_interface_reset">Reset notification wallpaper</string>
     <string name="menu_lockscreens_reset">Reset lockscreen wallpaper</string>
 
