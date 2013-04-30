@@ -163,6 +163,9 @@ public class StatusBarToggles extends AOKPPreferenceFragment implements
             mActions[i] = AwesomeConstants.getProperName(mContext, mActionCodes[i]);
         }
 
+        boolean isAdvanced = Settings.System.getBoolean(getContentResolver(),
+                Settings.System.CUSTOM_TOGGLE_ADVANCED, false);
+
         mEnabledToggles = findPreference(PREF_ENABLE_TOGGLES);
 
         mTogglesPerRow = (ListPreference) findPreference(PREF_TOGGLES_PER_ROW);
