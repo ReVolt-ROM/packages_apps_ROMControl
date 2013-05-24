@@ -1107,5 +1107,5 @@
     <string name="lockscreen_background_color_fill">Color fill</string>
     <string name="lockscreen_background_custom_image">Custom image</string>
     <string name="lockscreen_background_default_wallpaper">Default wallpaper</string>
-
+    <string name="dynamic_changelog_summary">Interactive changelog pulled live from our Gerrit instance</string>
 </resources>
