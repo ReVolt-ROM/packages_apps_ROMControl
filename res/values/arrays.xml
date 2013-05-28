@@ -900,6 +900,7 @@
         <item>5</item>
         <item>6</item>
     </string-array>
+
     <!-- Hidden Statusbar Pulldown Timeout -->
     <string-array name="hidden_statusbar_pulldown_timeout_entries" translatable="false">
         <item>2.5 seconds</item>
@@ -912,5 +913,17 @@
         <item>5000</item>
         <item>7500</item>
         <item>10000</item>
+    </string-array>
+
+    <!-- Custom lock screen background-->
+    <string-array name="lockscreen_background_entries" translatable="false">
+        <item>@string/lockscreen_background_color_fill</item>
+        <item>@string/lockscreen_background_custom_image</item>
+        <item>@string/lockscreen_background_default_wallpaper</item>
+    </string-array>
+    <string-array name="lockscreen_background_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 </resources>
