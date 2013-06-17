@@ -1,11 +1,9 @@
-
 package com.aokp.romcontrol.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +14,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,9 +24,9 @@ import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceScreen;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.TwoStatePreference;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -41,7 +38,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -51,7 +47,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.aokp.romcontrol.AOKPPreferenceFragment;
 import com.aokp.romcontrol.R;
 import com.aokp.romcontrol.service.CodeReceiver;
@@ -59,7 +54,6 @@ import com.aokp.romcontrol.util.AbstractAsyncSuCMDProcessor;
 import com.aokp.romcontrol.util.CMDProcessor;
 import com.aokp.romcontrol.util.Helpers;
 import com.aokp.romcontrol.widgets.AlphaSeekBar;
-import net.margaritov.preference.colorpicker.ColorPickerView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -86,7 +80,8 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     private static final CharSequence PREF_270 = "rotate_270";
     private static final CharSequence PREF_STATUS_BAR_NOTIF_COUNT = "status_bar_notif_count";
     private static final CharSequence PREF_NOTIFICATION_WALLPAPER = "notification_wallpaper";
-    private static final CharSequence PREF_NOTIFICATION_WALLPAPER_ALPHA = "notification_wallpaper_alpha";
+    private static final CharSequence PREF_NOTIFICATION_WALLPAPER_ALPHA =
+            "notification_wallpaper_alpha";
     private static final CharSequence PREF_CUSTOM_CARRIER_LABEL = "custom_carrier_label";
     private static final CharSequence PREF_SHOW_OVERFLOW = "show_overflow";
     private static final CharSequence PREF_VIBRATE_NOTIF_EXPAND = "vibrate_notif_expand";
@@ -97,7 +92,8 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     private static final CharSequence PREF_STATUSBAR_BRIGHTNESS = "statusbar_brightness_slider";
     private static final CharSequence PREF_USER_MODE_UI = "user_mode_ui";
     private static final CharSequence PREF_HIDE_EXTRAS = "hide_extras";
-    private static final CharSequence PREF_WAKEUP_WHEN_PLUGGED_UNPLUGGED = "wakeup_when_plugged_unplugged";
+    private static final CharSequence PREF_WAKEUP_WHEN_PLUGGED_UNPLUGGED =
+            "wakeup_when_plugged_unplugged";
     private static final CharSequence PREF_FORCE_DUAL_PANEL = "force_dualpanel";
     private static final CharSequence PREF_DISABLE_BOOTANIM = "disable_bootanimation";
     private static final CharSequence PREF_CUSTOM_BOOTANIM = "custom_bootanimation";
@@ -105,21 +101,15 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     private static final CharSequence PREF_NAVBAR = "navbar";
     private static final CharSequence PREF_MISC = "misc";
     private static final CharSequence PREF_DISPLAY = "display";
-    private static final CharSequence PREF_LOCKSCREEN_BACKGROUND = "lockscreen_background";
     private static final CharSequence PREF_POWER_CRT_MODE = "system_power_crt_mode";
     private static final CharSequence PREF_POWER_CRT_SCREEN_OFF = "system_power_crt_screen_off";
     private static final CharSequence PREF_STATUSBAR_HIDDEN = "statusbar_hidden";
     private static final CharSequence PREF_HIDDEN_STATUSBAR_PULLDOWN = "hidden_statusbar_pulldown";
     private static final CharSequence PREF_HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT = "hidden_statusbar_pulldown_timeout";
 
-    private static int STOCK_FONT_SIZE = 16;
     private static final int REQUEST_PICK_WALLPAPER = 201;
     //private static final int REQUEST_PICK_CUSTOM_ICON = 202; //unused
     private static final int REQUEST_PICK_BOOT_ANIMATION = 203;
-    private static final int REQUEST_CODE_BG_WALLPAPER = 1024;
-    private static final int LOCKSCREEN_BACKGROUND_COLOR_FILL = 0;
-    private static final int LOCKSCREEN_BACKGROUND_CUSTOM_IMAGE = 1;
-    private static final int LOCKSCREEN_BACKGROUND_DEFAULT_WALLPAPER = 2;
 
     private static final String WALLPAPER_NAME = "notification_wallpaper.jpg";
     private static final String BOOTANIMATION_USER_PATH = "/data/local/bootanimation.zip";
@@ -147,13 +137,11 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     CheckBoxPreference mHideExtras;
     CheckBoxPreference mWakeUpWhenPluggedOrUnplugged;
     CheckBoxPreference mDualpane;
-    ListPreference mCustomBackground;
     ListPreference mCrtMode;
     CheckBoxPreference mCrtOff;
     CheckBoxPreference mStatusBarHide;
     CheckBoxPreference mHiddenStatusbarPulldown;
     ListPreference mHiddenStatusbarPulldownTimeout;
-    ListPreference mFontsize;
 
     private AnimationDrawable mAnimationPart1;
     private AnimationDrawable mAnimationPart2;
@@ -171,9 +159,6 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     int mUserRotationAngles = -1;
 
     private boolean isStatusBarHideChecked = false;
-
-    private File mWallpaperImage;
-    private File mWallpaperTemporary;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -194,10 +179,10 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         if (mUserRotationAngles < 0) {
             // Not set by user so use these defaults
             boolean mAllowAllRotations = mContext.getResources().getBoolean(
-                            com.android.internal.R.bool.config_allowAllRotations) ? true : false;
-            mUserRotationAngles = mAllowAllRotations  ?
-                (1 | 2 | 4 | 8) : // All angles
-                (1 | 2 | 8); // All except 180
+                    com.android.internal.R.bool.config_allowAllRotations) ? true : false;
+            mUserRotationAngles = mAllowAllRotations ?
+                    (1 | 2 | 4 | 8) : // All angles
+                    (1 | 2 | 8); // All except 180
         }
         mAllow180Rotation.setChecked((mUserRotationAngles & 4) != 0);
         mAllow270Rotation.setChecked((mUserRotationAngles & 8) != 0);
@@ -206,7 +191,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         mStatusBarNotifCount.setChecked(Settings.System.getBoolean(mContentResolver,
                 Settings.System.STATUSBAR_NOTIF_COUNT, false));
 
-        mDisableBootAnimation = (CheckBoxPreference)findPreference(PREF_DISABLE_BOOTANIM);
+        mDisableBootAnimation = (CheckBoxPreference) findPreference(PREF_DISABLE_BOOTANIM);
 
         mCustomBootAnimation = findPreference(PREF_CUSTOM_BOOTANIM);
 
@@ -229,10 +214,11 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         mVibrateOnExpand.setChecked(Settings.System.getBoolean(mContentResolver,
                 Settings.System.VIBRATE_NOTIF_EXPAND, true));
         if (!hasVibration) {
-            ((PreferenceGroup)findPreference(PREF_NOTIFICATION_VIBRATE)).removePreference(mVibrateOnExpand);
+            ((PreferenceGroup) findPreference(PREF_NOTIFICATION_VIBRATE))
+                    .removePreference(mVibrateOnExpand);
         }
 
-        mLongPressToKill = (CheckBoxPreference)findPreference(PREF_LONGPRESS_TO_KILL);
+        mLongPressToKill = (CheckBoxPreference) findPreference(PREF_LONGPRESS_TO_KILL);
         mLongPressToKill.setChecked(Settings.System.getInt(mContentResolver,
                 Settings.System.KILL_APP_LONGPRESS_BACK, 0) == 1);
         if (!hasHardwareButtons) {
@@ -249,11 +235,11 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
 
         mHideExtras = (CheckBoxPreference) findPreference(PREF_HIDE_EXTRAS);
         mHideExtras.setChecked(Settings.System.getBoolean(mContentResolver,
-                        Settings.System.HIDE_EXTRAS_SYSTEM_BAR, false));
+                Settings.System.HIDE_EXTRAS_SYSTEM_BAR, false));
 
         mShowActionOverflow = (CheckBoxPreference) findPreference(PREF_SHOW_OVERFLOW);
         mShowActionOverflow.setChecked(Settings.System.getBoolean(mContentResolver,
-                        Settings.System.UI_FORCE_OVERFLOW_BUTTON, false));
+                Settings.System.UI_FORCE_OVERFLOW_BUTTON, false));
 
         boolean isStatusBarHideChecked = Settings.System.getInt(getActivity().getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN, 0) == 1;
@@ -281,18 +267,11 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
 
         mDualpane = (CheckBoxPreference) findPreference(PREF_FORCE_DUAL_PANEL);
         mDualpane.setChecked(Settings.System.getBoolean(mContentResolver,
-                        Settings.System.FORCE_DUAL_PANEL, getResources().getBoolean(
-                        com.android.internal.R.bool.preferences_prefer_dual_pane)));
-
-        mCustomBackground = (ListPreference) findPreference(PREF_LOCKSCREEN_BACKGROUND);
-        mCustomBackground.setOnPreferenceChangeListener(this);
-        updateCustomBackgroundSummary();
-
-        mWallpaperImage = new File(getActivity().getFilesDir() + "/lockwallpaper");
-        mWallpaperTemporary = new File(getActivity().getCacheDir() + "/lockwallpaper.tmp");
+                Settings.System.FORCE_DUAL_PANEL, getResources().getBoolean(
+                com.android.internal.R.bool.preferences_prefer_dual_pane)));
 
         boolean isCrtOffChecked = (Settings.System.getBoolean(mContentResolver,
-                        Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF, true));
+                Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF, true));
         mCrtOff = (CheckBoxPreference) findPreference(PREF_POWER_CRT_SCREEN_OFF);
         mCrtOff.setChecked(isCrtOffChecked);
 
@@ -303,23 +282,23 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                 Settings.System.SYSTEM_POWER_CRT_MODE, crtMode)));
         mCrtMode.setOnPreferenceChangeListener(this);
 
-        mWakeUpWhenPluggedOrUnplugged = (CheckBoxPreference) findPreference(PREF_WAKEUP_WHEN_PLUGGED_UNPLUGGED);
+        mWakeUpWhenPluggedOrUnplugged =
+                (CheckBoxPreference) findPreference(PREF_WAKEUP_WHEN_PLUGGED_UNPLUGGED);
         mWakeUpWhenPluggedOrUnplugged.setChecked(Settings.System.getBoolean(mContentResolver,
-                        Settings.System.WAKEUP_WHEN_PLUGGED_UNPLUGGED, true));
+                Settings.System.WAKEUP_WHEN_PLUGGED_UNPLUGGED, true));
+
         // hide option if device is already set to never wake up
-        if(!mContext.getResources().getBoolean(
+        if (!mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_unplugTurnsOnScreen)) {
-            ((PreferenceGroup) findPreference(PREF_DISPLAY)).removePreference(mWakeUpWhenPluggedOrUnplugged);
+            ((PreferenceGroup) findPreference(PREF_DISPLAY))
+                    .removePreference(mWakeUpWhenPluggedOrUnplugged);
         }
 
-        mFontsize = (ListPreference) findPreference("status_bar_fontsize");
-        mFontsize.setOnPreferenceChangeListener(this);
-        mFontsize.setValue(Integer.toString(Settings.System.getInt(mContentRes,
-                Settings.System.STATUSBAR_FONT_SIZE, STOCK_FONT_SIZE)));
-
-        if (isTablet(mContext)) {
+        if (isTabletUI(mContext)) {
             mStatusbarSliderPreference.setEnabled(false);
             mStatusBarHide.setEnabled(false);
+            mNotificationWallpaper.setEnabled(false);
+            mWallpaperAlpha.setEnabled(false);
         } else {
             mHideExtras.setEnabled(false);
         }
@@ -327,23 +306,6 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         setHasOptionsMenu(true);
         resetBootAnimation();
         findWallpaperStatus();
-    }
-
-    private void updateCustomBackgroundSummary() {
-        int resId;
-        String value = Settings.System.getString(getContentResolver(),
-                Settings.System.LOCKSCREEN_BACKGROUND);
-        if (value == null) {
-            resId = R.string.lockscreen_background_default_wallpaper;
-            mCustomBackground.setValueIndex(LOCKSCREEN_BACKGROUND_DEFAULT_WALLPAPER);
-        } else if (value.isEmpty()) {
-            resId = R.string.lockscreen_background_custom_image;
-            mCustomBackground.setValueIndex(LOCKSCREEN_BACKGROUND_CUSTOM_IMAGE);
-        } else {
-            resId = R.string.lockscreen_background_color_fill;
-            mCustomBackground.setValueIndex(LOCKSCREEN_BACKGROUND_COLOR_FILL);
-        }
-        mCustomBackground.setSummary(getResources().getString(resId));
     }
 
     @Override
@@ -364,11 +326,12 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     /**
      * Resets boot animation path. Essentially clears temporary-set boot animation
      * set by the user from the dialog.
+     *
      * @return returns true if a boot animation exists (user or system). false otherwise.
      */
     private boolean resetBootAnimation() {
         boolean bootAnimationExists = false;
-        if(new File(BOOTANIMATION_USER_PATH).exists()) {
+        if (new File(BOOTANIMATION_USER_PATH).exists()) {
             mBootAnimationPath = BOOTANIMATION_USER_PATH;
             bootAnimationExists = true;
         } else if (new File(BOOTANIMATION_SYSTEM_PATH).exists()) {
@@ -382,9 +345,10 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     }
 
     private void resetSwaggedOutBootAnimation() {
-        if(new File("/data/local/bootanimation.user").exists()) {
+        if (new File("/data/local/bootanimation.user").exists()) {
             // we're using the alt boot animation
-            String moveAnimCommand = "mv /data/local/bootanimation.user /data/local/bootanimation.zip";
+            String moveAnimCommand =
+                    "mv /data/local/bootanimation.user /data/local/bootanimation.zip";
             // we must wait for this command to finish before we continue
             CMDProcessor.runSuCommand(moveAnimCommand);
         }
@@ -408,13 +372,17 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-            Preference preference) {
+                                         Preference preference) {
         if (preference == mAllow180Rotation || preference == mAllow270Rotation) {
             boolean checked180 = ((CheckBoxPreference) mAllow180Rotation).isChecked();
             boolean checked270 = ((CheckBoxPreference) mAllow270Rotation).isChecked();
             int result = (1 | 2);
-            if (checked180) result |= 4;
-            if (checked270) result |= 8;
+            if (checked180) {
+                result |= 4;
+            }
+            if (checked270) {
+                result |= 8;
+            }
             Settings.System.putInt(mContentResolver,
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES, result);
             return true;
@@ -489,12 +457,14 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
             OnSeekBarChangeListener seekBarChangeListener = new OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekbar,
-                        int progress, boolean fromUser) {
+                                              int progress, boolean fromUser) {
                     mSeekbarProgress = seekbar.getProgress();
                 }
+
                 @Override
                 public void onStopTrackingTouch(SeekBar seekbar) {
                 }
+
                 @Override
                 public void onStartTrackingTouch(SeekBar seekbar) {
                 }
@@ -506,22 +476,22 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                     .setTitle(title)
                     .setView(alphaDialog)
                     .setNegativeButton(cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // nothing
-                }
-            })
-            .setPositiveButton(ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    float val = (float) mSeekbarProgress / 100;
-                    Settings.System.putFloat(mContentResolver,
-                        Settings.System.NOTIF_WALLPAPER_ALPHA, val);
-                    Helpers.restartSystemUI();
-                }
-            })
-            .create()
-            .show();
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // nothing
+                        }
+                    })
+                    .setPositiveButton(ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            float val = (float) mSeekbarProgress / 100;
+                            Settings.System.putFloat(mContentResolver,
+                                    Settings.System.NOTIF_WALLPAPER_ALPHA, val);
+                            Helpers.restartSystemUI();
+                        }
+                    })
+                    .create()
+                    .show();
             return true;
         } else if (preference == mShowImeSwitcher) {
             Settings.System.putBoolean(mContentResolver,
@@ -544,22 +514,22 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
             alert.setView(input);
             alert.setPositiveButton(getResources().getString(R.string.ok),
                     new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String value = input.getText().toString();
-                    Settings.System.putString(mContentResolver,
-                            Settings.System.CUSTOM_CARRIER_LABEL, value);
-                    updateCustomLabelTextSummary();
-                    Intent i = new Intent();
-                    i.setAction("com.aokp.romcontrol.LABEL_CHANGED");
-                    mContext.sendBroadcast(i);
-                }
-            });
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            String value = input.getText().toString();
+                            Settings.System.putString(mContentResolver,
+                                    Settings.System.CUSTOM_CARRIER_LABEL, value);
+                            updateCustomLabelTextSummary();
+                            Intent i = new Intent();
+                            i.setAction("com.aokp.romcontrol.LABEL_CHANGED");
+                            mContext.sendBroadcast(i);
+                        }
+                    });
             alert.setNegativeButton(getResources().getString(R.string.cancel),
                     new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    // Canceled.
-                }
-            });
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            // Canceled.
+                        }
+                    });
             alert.show();
         } else if (preference == mVibrateOnExpand) {
             Settings.System.putBoolean(mContentResolver,
@@ -650,42 +620,23 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                     Bitmap bitmap = BitmapFactory.decodeFile(
                             selectedImageUri.getPath());
                     bitmap.compress(Bitmap.CompressFormat.PNG,
-                                    100,
-                                    wallpaperStream);
+                            100,
+                            wallpaperStream);
                 } catch (FileNotFoundException e) {
                     return; // NOOOOO
                 } finally {
                     try {
-                        if (wallpaperStream != null)
+                        if (wallpaperStream != null) {
                             wallpaperStream.close();
+                        }
                     } catch (IOException e) {
                         // let it go
                     }
                 }
                 findWallpaperStatus();
                 Helpers.restartSystemUI();
-           } else if (requestCode == REQUEST_CODE_BG_WALLPAPER) {
-              int hintId;
-
-              if (resultCode == Activity.RESULT_OK) {
-                  if (mWallpaperTemporary.exists()) {
-                      mWallpaperTemporary.renameTo(mWallpaperImage);
-                  }
-                  mWallpaperImage.setReadOnly();
-                  hintId = R.string.lockscreen_background_result_successful;
-                  Settings.System.putString(getContentResolver(),
-                          Settings.System.LOCKSCREEN_BACKGROUND, "");
-                  updateCustomBackgroundSummary();
-               } else {
-                  if (mWallpaperTemporary.exists()) {
-                      mWallpaperTemporary.delete();
-                  }
-                  hintId = R.string.lockscreen_background_result_not_successful;
-              }
-              Toast.makeText(getActivity(),
-                      getResources().getString(hintId), Toast.LENGTH_LONG).show();
             } else if (requestCode == REQUEST_PICK_BOOT_ANIMATION) {
-                if (data==null) {
+                if (data == null) {
                     //Nothing returned by user, probably pressed back button in file manager
                     return;
                 }
@@ -698,7 +649,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
     private void openBootAnimationDialog() {
         resetSwaggedOutBootAnimation();
         Log.e(TAG, "boot animation path: " + mBootAnimationPath);
-        if(mCustomBootAnimationDialog != null) {
+        if (mCustomBootAnimationDialog != null) {
             mCustomBootAnimationDialog.cancel();
             mCustomBootAnimationDialog = null;
         }
@@ -715,37 +666,40 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                 }
             });
         } else if (new File(BOOTANIMATION_USER_PATH).exists()) {
-            builder.setPositiveButton(R.string.clear_custom_bootanimation, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    new AbstractAsyncSuCMDProcessor() {
+            builder.setPositiveButton(R.string.clear_custom_bootanimation,
+                    new DialogInterface.OnClickListener() {
                         @Override
-                        protected void onPostExecute(String result) {
-                            resetBootAnimation();
+                        public void onClick(DialogInterface dialog, int which) {
+                            new AbstractAsyncSuCMDProcessor() {
+                                @Override
+                                protected void onPostExecute(String result) {
+                                    resetBootAnimation();
+                                }
+                            }.execute("rm '" + BOOTANIMATION_USER_PATH + "'",
+                                    "rm '/data/media/bootanimation.backup'");
                         }
-                    }.execute("rm '" + BOOTANIMATION_USER_PATH + "'", "rm '/data/media/bootanimation.backup'");
-                }
-            });
+                    });
         }
-        builder.setNeutralButton(R.string.set_custom_bootanimation, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                PackageManager packageManager = getActivity().getPackageManager();
-                Intent test = new Intent(Intent.ACTION_GET_CONTENT);
-                test.setType("file/*");
-                List<ResolveInfo> list = packageManager.queryIntentActivities(test,
-                        PackageManager.GET_ACTIVITIES);
-                if (!list.isEmpty()) {
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
-                    intent.setType("file/*");
-                    startActivityForResult(intent, REQUEST_PICK_BOOT_ANIMATION);
-                } else {
-                    //No app installed to handle the intent - file explorer required
-                    Toast.makeText(mContext, R.string.install_file_manager_error,
-                            Toast.LENGTH_SHORT).show();
-                }
+        builder.setNeutralButton(R.string.set_custom_bootanimation,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        PackageManager packageManager = getActivity().getPackageManager();
+                        Intent test = new Intent(Intent.ACTION_GET_CONTENT);
+                        test.setType("file/*");
+                        List<ResolveInfo> list = packageManager.queryIntentActivities(test,
+                                PackageManager.GET_ACTIVITIES);
+                        if (!list.isEmpty()) {
+                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+                            intent.setType("file/*");
+                            startActivityForResult(intent, REQUEST_PICK_BOOT_ANIMATION);
+                        } else {
+                            //No app installed to handle the intent - file explorer required
+                            Toast.makeText(mContext, R.string.install_file_manager_error,
+                                    Toast.LENGTH_SHORT).show();
+                        }
 
-            }
-        });
+                    }
+                });
         builder.setNegativeButton(com.android.internal.R.string.cancel,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -793,8 +747,12 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                     outChannel);
         } finally {
             // ensure closure
-            if (inChannel != null) inChannel.close();
-            if (outChannel != null) outChannel.close();
+            if (inChannel != null) {
+                inChannel.close();
+            }
+            if (outChannel != null) {
+                outChannel.close();
+            }
         }
     }
 
@@ -825,20 +783,23 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
             return;
         } finally {
             try {
-                if (bufferedReader != null)
+                if (bufferedReader != null) {
                     bufferedReader.close();
+                }
             } catch (IOException e) {
                 // we tried
             }
             try {
-                if (inputStreamReader != null)
+                if (inputStreamReader != null) {
                     inputStreamReader.close();
+                }
             } catch (IOException e) {
                 // we tried
             }
             try {
-                if (inputStream != null)
+                if (inputStream != null) {
                     inputStream.close();
+                }
             } catch (IOException e) {
                 // moving on...
             }
@@ -852,8 +813,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         try {
             if (info.length > 2) {
                 partName2 = info[2].split(" ")[3];
-            }
-            else {
+            } else {
                 partName2 = "";
             }
         } catch (Exception e) {
@@ -866,7 +826,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         mAnimationPart2 = new AnimationDrawable();
         try {
             for (Enumeration<? extends ZipEntry> enumeration = zipfile.entries();
-                    enumeration.hasMoreElements();) {
+                 enumeration.hasMoreElements(); ) {
                 ZipEntry entry = enumeration.nextElement();
                 if (entry.isDirectory()) {
                     continue;
@@ -880,8 +840,9 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                                 BitmapFactory.decodeStream(partOneInStream,
                                         null, opt)), delay);
                     } finally {
-                        if (partOneInStream != null)
+                        if (partOneInStream != null) {
                             partOneInStream.close();
+                        }
                     }
                 } else if (partName2.equalsIgnoreCase(partname)) {
                     InputStream partTwoInStream = null;
@@ -891,8 +852,9 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                                 BitmapFactory.decodeStream(partTwoInStream,
                                         null, opt)), delay);
                     } finally {
-                        if (partTwoInStream != null)
+                        if (partTwoInStream != null) {
                             partTwoInStream.close();
+                        }
                     }
                 }
             }
@@ -908,14 +870,14 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
             mAnimationPart2.setOneShot(false);
             mAnimationPart1.setOnAnimationFinishedListener(
                     new AnimationDrawable.OnAnimationFinishedListener() {
-                @Override
-                public void onAnimationFinished() {
-                    Log.d(TAG, "First part finished");
-                    mView.setImageDrawable(mAnimationPart2);
-                    mAnimationPart1.stop();
-                    mAnimationPart2.start();
-                }
-            });
+                        @Override
+                        public void onAnimationFinished() {
+                            Log.d(TAG, "First part finished");
+                            mView.setImageDrawable(mAnimationPart2);
+                            mAnimationPart1.stop();
+                            mAnimationPart2.start();
+                        }
+                    });
         } else {
             mAnimationPart1.setOneShot(false);
         }
@@ -981,11 +943,11 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
         DisableBootAnimation();
         dialog.dismiss();
         new AbstractAsyncSuCMDProcessor() {
-          @Override
-          protected void onPostExecute(String result) {
-          }
+            @Override
+            protected void onPostExecute(String result) {
+            }
         }.execute("cp " + bootAnimationPath + " /data/local/bootanimation.zip",
-                  "chmod 644 /data/local/bootanimation.zip");
+                "chmod 644 /data/local/bootanimation.zip");
     }
 
     private void DisableBootAnimation() {
@@ -995,8 +957,9 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                 .success()) {
             // if not add value
             Helpers.getMount("rw");
-            CMDProcessor.runSuCommand(String.format("echo debug.sf.nobootanimation=%d >> /system/build.prop",
-                    mDisableBootAnimation.isChecked() ? 1 : 0));
+            CMDProcessor.runSuCommand(
+                    String.format("echo debug.sf.nobootanimation=%d >> /system/build.prop",
+                            mDisableBootAnimation.isChecked() ? 1 : 0));
             Helpers.getMount("ro");
         }
         // preform bootanimation operations off UI thread
@@ -1006,8 +969,9 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                 if (mDisableBootAnimation.isChecked()) {
                     // do not show same insult as last time
                     int newInsult = mRandomGenerator.nextInt(mInsults.length);
-                    while (newInsult == mLastRandomInsultIndex)
+                    while (newInsult == mLastRandomInsultIndex) {
                         newInsult = mRandomGenerator.nextInt(mInsults.length);
+                    }
 
                     // update our static index reference
                     mLastRandomInsultIndex = newInsult;
@@ -1029,12 +993,15 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                     Settings.System.USER_UI_MODE, val);
             mStatusbarSliderPreference.setEnabled(val == 1 ? false : true);
             mStatusBarHide.setEnabled(val == 1 ? false : true);
+            mNotificationWallpaper.setEnabled(val == 1 ? false : true);
+            if (val == 1) {
+                mWallpaperAlpha.setEnabled(false);
+            } else {
+                findWallpaperStatus();
+            }
             mHideExtras.setEnabled(val == 1 ? true : false);
             Helpers.restartSystemUI();
             return true;
-        } else if (preference == mCustomBackground) {
-            int selection = mCustomBackground.findIndexOfValue((String) newValue);
-            return handleBackgroundSelection(selection);
         } else if (preference == mCrtMode) {
             int crtMode = Integer.valueOf((String) newValue);
             int index = mCrtMode.findIndexOfValue((String) newValue);
@@ -1067,89 +1034,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
                     Settings.System.HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT, val);
             Helpers.restartSystemUI();
             return true;
-        } else if (preference == mFontsize) {
-            int val = Integer.parseInt((String) newValue);
-            Settings.System.putInt(mContentRes,
-                    Settings.System.STATUSBAR_FONT_SIZE, val);
-            Helpers.restartSystemUI();
-            return true;
         }
-        return false;
-    }
-
-    private boolean handleBackgroundSelection(int selection) {
-        if (selection == LOCKSCREEN_BACKGROUND_COLOR_FILL) {
-            final ColorPickerView colorView = new ColorPickerView(getActivity());
-            int currentColor = Settings.System.getInt(getContentResolver(),
-                    Settings.System.LOCKSCREEN_BACKGROUND, -1);
-
-            if (currentColor != -1) {
-                colorView.setColor(currentColor);
-            }
-            colorView.setAlphaSliderVisible(true);
-
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.lockscreen_custom_background_dialog_title)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Settings.System.putInt(getContentResolver(),
-                                    Settings.System.LOCKSCREEN_BACKGROUND, colorView.getColor());
-                            updateCustomBackgroundSummary();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setView(colorView)
-                    .show();
-        } else if (selection == LOCKSCREEN_BACKGROUND_CUSTOM_IMAGE) {
-            final Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
-            intent.setType("image/*");
-            intent.putExtra("crop", "true");
-            intent.putExtra("scale", true);
-            intent.putExtra("scaleUpIfNeeded", false);
-            intent.putExtra("outputFormat", Bitmap.CompressFormat.PNG.toString());
-
-            final Display display = getActivity().getWindowManager().getDefaultDisplay();
-            final Rect rect = new Rect();
-            final Window window = getActivity().getWindow();
-
-            window.getDecorView().getWindowVisibleDisplayFrame(rect);
-
-            int statusBarHeight = rect.top;
-            int contentViewTop = window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-            int titleBarHeight = contentViewTop - statusBarHeight;
-            boolean isPortrait = getResources().getConfiguration().orientation ==
-                    Configuration.ORIENTATION_PORTRAIT;
-
-            int width = display.getWidth();
-            int height = display.getHeight() - titleBarHeight;
-
-            intent.putExtra("aspectX", isPortrait ? width : height);
-            intent.putExtra("aspectY", isPortrait ? height : width);
-
-            try {
-                mWallpaperTemporary.createNewFile();
-                mWallpaperTemporary.setWritable(true, false);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mWallpaperTemporary));
-                intent.putExtra("return-data", false);
-                getActivity().startActivityFromFragment(this, intent, REQUEST_CODE_BG_WALLPAPER);
-            } catch (IOException e) {
-                // Do nothing here
-            } catch (ActivityNotFoundException e) {
-                // Do nothing here
-            }
-        } else if (selection == LOCKSCREEN_BACKGROUND_DEFAULT_WALLPAPER) {
-            Settings.System.putString(getContentResolver(),
-                    Settings.System.LOCKSCREEN_BACKGROUND, null);
-            updateCustomBackgroundSummary();
-            return true;
-        }
-
         return false;
     }
 
@@ -1309,7 +1194,7 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
 
             // update keyguard alpha
             int lockscreen_alpha = Settings.System.getInt(getActivity().getContentResolver(),
-                        Settings.System.LOCKSCREEN_ALPHA_CONFIG, KEYGUARD_ALPHA);
+                    Settings.System.LOCKSCREEN_ALPHA_CONFIG, KEYGUARD_ALPHA);
             if (!mSeekBars[STATUSBAR_KG_ALPHA].isEnabled()) {
                 mSeekBars[STATUSBAR_KG_ALPHA].setCurrentAlpha(lockscreen_alpha);
             }
@@ -1320,17 +1205,19 @@ public class UserInterface extends AOKPPreferenceFragment implements OnPreferenc
 
         @Override
         public void onDestroyView() {
-            if (getDialog() != null && getRetainInstance())
+            if (getDialog() != null && getRetainInstance()) {
                 getDialog().setDismissMessage(null);
+            }
             super.onDestroyView();
         }
 
-        private CompoundButton.OnCheckedChangeListener mUpdateStatesListener = new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateToggleState();
-            }
-        };
+        private CompoundButton.OnCheckedChangeListener mUpdateStatesListener =
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        updateToggleState();
+                    }
+                };
 
         private boolean getSavedLinkedState() {
             return getActivity().getSharedPreferences("transparency", Context.MODE_PRIVATE)
