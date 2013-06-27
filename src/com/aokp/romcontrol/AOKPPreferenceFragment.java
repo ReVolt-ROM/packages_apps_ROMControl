@@ -62,7 +62,7 @@ public class AOKPPreferenceFragment extends PreferenceFragment implements Dialog
         hasHardwareButtons = getResources().getBoolean(R.bool.has_hardware_buttons);
         hasFastCharge = getResources().getBoolean(R.bool.has_fast_charge);
         hasColorTuning = getResources().getBoolean(R.bool.has_color_tuning);
-        mContext = getActivity();
+        mContext = getActivity().getApplicationContext();
         mActionBar = getActivity().getActionBar();
         mContentRes = getActivity().getContentResolver();
         mContentAppRes = mContext.getContentResolver(); 
