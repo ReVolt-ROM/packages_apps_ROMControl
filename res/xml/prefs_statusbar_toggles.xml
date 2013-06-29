@@ -25,6 +25,10 @@
         android:summary="@string/toggles_per_row_summary"
         android:title="@string/toggles_per_row_title" />
 
+    <PreferenceCategory
+        android:key="custom_colors"
+        android:title="@string/custom_toggle_colors">
+
     <ListPreference
         android:key="tile_background_style"
         android:entries="@array/tile_background_style_entries"
@@ -53,6 +57,8 @@
         android:key="tile_text_color"
         android:title="@string/tile_text_color_title"
         android:defaultValue="0xffffffff" />
+
+    </PreferenceCategory>
 
     <CheckBoxPreference
         android:key="enable_fast_toggle"
